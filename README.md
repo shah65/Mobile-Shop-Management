@@ -1,48 +1,64 @@
-# Mobile Shop Manager (Phase 1: Devices + Customers)
+# 📱 Mobile Shop Manager
 
-## What this is
-An Electron + React desktop app with a local SQLite database.
-No database to install - SQLite is just a file, created automatically
-the first time you run the app.
+A modern desktop application for mobile shop inventory management built with Electron, React, and SQLite - solving real-world challenges faced by mobile shop owners.
 
-## How to run on your laptop
+## 🎯 The Problem We're Solving
 
-1. Make sure you have Node.js installed (v18 or newer): https://nodejs.org
+Mobile shop owners struggle with:
+- 📦 Tracking which devices are sold vs. in stock
+- 👥 Managing customer information and purchase history
+- 💰 Tracking loans and partial payments
+- 📊 Understanding daily, monthly, and yearly income
+- 🔄 Manual inventory management leading to errors
 
-2. Open a terminal in this folder and install dependencies:
-   npm install
+## ✨ Features
 
-   Note: better-sqlite3 compiles a small native module on install.
-   If this fails, you likely need build tools:
-     - Windows: run `npm install --global windows-build-tools` (as admin), or
-       install "Desktop development with C++" via Visual Studio Build Tools.
-     - Mac: run `xcode-select --install`
+### ✅ Current Features
+- **Device Management**: Add, edit, delete, and search devices
+- **Inventory Tracking**: Separate views for "In Stock" and "Sold" devices
+- **Brand Colors**: Automatic color coding based on device brand
+- **Dashboard Stats**: Real-time statistics for total devices, stock, sold, and revenue
+- **Search & Filter**: Quick search by brand, model, or IMEI
+- **Collapsible Sidebar**: Smooth animations and modern UI
+- **Local Database**: SQLite for fast, offline-first performance
+- **Secure**: Context isolation, preload scripts, and secure IPC
 
-3. Run it in development mode (hot reload for React):
-   npm run dev
+### 🚀 Coming Soon
+- 👥 Customer Management
+- 💰 Sales & Loan Tracking
+- 📊 Advanced Reporting
+- 🤖 WhatsApp Integration for loan reminders
+- ☁️ Cloud Backup & Multi-shop Support
+- 💳 Subscription Management
 
-   This starts the Vite dev server AND opens the Electron window together.
+## 🛠️ Tech Stack
 
-4. To build a real installable .exe / .dmg later:
-   npm run package
+| Technology | Purpose |
+| :--- | :--- |
+| **Electron** | Desktop application framework |
+| **React** | UI library |
+| **SQLite** | Local database |
+| **TailwindCSS** | Styling |
+| **Lucide React** | Icons |
+| **Vite** | Build tool |
 
-   This will produce an installer in the `dist` or `release` folder
-   that you can hand to a shop owner - they just double click it,
-   no terminal, no Node, no database setup needed on their end.
+## 🚀 Getting Started
 
-## Where is the data stored?
-SQLite file `shop.db` is created automatically in:
-  - Windows: %APPDATA%/Mobile Shop Manager/shop.db
-  - Mac: ~/Library/Application Support/Mobile Shop Manager/shop.db
+### Prerequisites
+- Node.js v18+
+- npm or yarn
 
-## Project structure
-- src/main/        -> Electron "backend" (like your Express layer), DB logic
-- src/preload/      -> Secure bridge between backend and React UI
-- src/renderer/     -> React frontend (this part will feel just like MERN)
+### Installation
 
-## What's next (not built yet)
-- Sales (link a device to a customer when sold)
-- Loans / installments
-- Workers + salary
-- Income/expense dashboards
-- Cloud sync + WhatsApp reminders
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/mobile-shop-manager.git
+
+# Navigate to project
+cd mobile-shop-manager
+
+# Install dependencies
+npm install
+
+# Run in development mode
+npm run dev

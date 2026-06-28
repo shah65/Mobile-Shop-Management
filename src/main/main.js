@@ -1,8 +1,50 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
- 
-// ✅ ADD THIS - Auto reload in development
+// ============================================
+// ✅ IMPORT SERVICES - Using normal functions
+// ============================================
+const {
+  getAllDevices,
+  getDevicesByStatus,
+  searchDevices,
+  createDevice,
+  updateDevice,
+  deleteDevice,
+  sellDevice,
+  returnDevice,        // 👈 NEW
+  getReturnedDevices,
+} = require('../services/device.service');
+
+const {
+  getAllCustomers,
+  searchCustomers,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+  // ✅ ADD THESE TWO:
+  getCustomersWithDue,
+  getCustomerDevicesWithDue,
+} = require('../services/customer.service');
+
+// ============================================
+// ✅ DEBUG: Log to verify imports
+// ============================================
+console.log('✅ Device functions imported:');
+console.log('  - getAllDevices:', typeof getAllDevices);
+console.log('  - getDevicesByStatus:', typeof getDevicesByStatus);
+console.log('  - createDevice:', typeof createDevice);
+console.log('  - sellDevice:', typeof sellDevice);
+
+console.log('✅ Customer functions imported:');
+console.log('  - getAllCustomers:', typeof getAllCustomers);
+console.log('  - createCustomer:', typeof createCustomer);
+console.log('  - getCustomersWithDue:', typeof getCustomersWithDue);
+console.log('  - getCustomerDevicesWithDue:', typeof getCustomerDevicesWithDue);
+
+// ============================================
+// AUTO RELOAD IN DEVELOPMENT
+// ============================================
 if (process.env.NODE_ENV === 'development') {
   process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
   require('electron-reload')(__dirname, {
@@ -11,26 +53,29 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// Import SERVICES (Controllers use Services)
-const DeviceService = require('../services/device.service');
- 
+// ============================================
+// CONTROLLER MIDDLEWARE (Error handler)
+// ============================================
+function handleIPC(fn) {
+  if (typeof fn !== 'function') {
+    console.error('❌ handleIPC received non-function:', fn);
+    throw new Error('fn is not a function');
+  }
 
-// --- CONTROLLER MIDDLEWARE (Error handler) ---
-// This is like Express error middleware
-const handleIPC = (fn) => {
   return async (event, ...args) => {
     try {
       const result = await fn(...args);
       return result;
     } catch (error) {
       console.error('[IPC Error]', error.message);
-      // Send error back to React frontend
       throw new Error(error.message);
     }
   };
-};
+}
 
-// --- WINDOW CREATION (Like Express app.listen) ---
+// ============================================
+// WINDOW CREATION
+// ============================================
 function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
@@ -39,7 +84,7 @@ function createWindow() {
       preload: path.join(__dirname, '../preload/preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox:false,
+      sandbox: false,
     },
   });
 
@@ -54,19 +99,32 @@ function createWindow() {
 }
 
 // ============================================
-// DEVICE CONTROLLERS (IPC Routes)
-// These are like: app.get('/devices', controller.getAll)
+// ✅ DEVICE IPC HANDLERS
 // ============================================
-ipcMain.handle('devices:getAll', handleIPC(DeviceService.getAll));
-ipcMain.handle('devices:getByStatus', handleIPC(DeviceService.getByStatus));
-ipcMain.handle('devices:search', handleIPC(DeviceService.search));
-ipcMain.handle('devices:create', handleIPC(DeviceService.create));
-ipcMain.handle('devices:update', handleIPC(DeviceService.update));
-ipcMain.handle('devices:delete', handleIPC(DeviceService.delete));
+ipcMain.handle('devices:getAll', handleIPC(getAllDevices));
+ipcMain.handle('devices:getByStatus', handleIPC(getDevicesByStatus));
+ipcMain.handle('devices:search', handleIPC(searchDevices));
+ipcMain.handle('devices:create', handleIPC(createDevice));
+ipcMain.handle('devices:update', handleIPC(updateDevice));
+ipcMain.handle('devices:delete', handleIPC(deleteDevice));
+ipcMain.handle('devices:sell', handleIPC(sellDevice));
+ipcMain.handle('devices:return', handleIPC(returnDevice));        // 👈 NEW
+ipcMain.handle('devices:getReturned', handleIPC(getReturnedDevices)); // 👈 NEW
+// ============================================
+// ✅ CUSTOMER IPC HANDLERS
+// ============================================
+ipcMain.handle('customers:getAll', handleIPC(getAllCustomers));
+ipcMain.handle('customers:search', handleIPC(searchCustomers));
+ipcMain.handle('customers:create', handleIPC(createCustomer));
+ipcMain.handle('customers:update', handleIPC(updateCustomer));
+ipcMain.handle('customers:delete', handleIPC(deleteCustomer));
 
- 
+// ✅ NEW: Due tracking handlers
+ipcMain.handle('customers:getWithDue', handleIPC(getCustomersWithDue));
+ipcMain.handle('customers:getDevicesWithDue', handleIPC(getCustomerDevicesWithDue));
+
 // ============================================
-// APP LIFECYCLE (Like Express server start)
+// APP LIFECYCLE
 // ============================================
 app.whenReady().then(createWindow);
 
